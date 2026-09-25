@@ -79,6 +79,12 @@ public final class MultiFormatOneDReader extends OneDReader {
       if (possibleFormats.contains(BarcodeFormat.DATA_BAR_LIMITED)) {
         readers.add(new DataBarLimitedReader());
       }
+      // DX Film Edge is opt-in like Telepen: it is a niche symbology, and
+      // unlike every other reader here it carries state between rows, so
+      // scanning for it unconditionally would cost every caller something.
+      if (possibleFormats.contains(BarcodeFormat.DX_FILM_EDGE)) {
+        readers.add(new DXFilmEdgeReader());
+      }
       // Telepen is deliberately absent from the default set below. Its start
       // pattern is ten narrow elements, which is weak enough that scanning for
       // it unconditionally would raise the misread rate of every other format.

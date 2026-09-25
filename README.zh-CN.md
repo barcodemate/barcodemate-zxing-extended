@@ -63,7 +63,7 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | DataBar Expanded / Expanded Stacked | 读 | 读（写：zint） | 读 |
 | **DataBar Limited** | — | 读（写：zint） | **已支持解码** |
 | **Telepen / Alpha / Numeric** | — | 读（写：zint） | **已支持解码** |
-| **DX Film Edge** | — | 读（写：zint） | **计划中** |
+| **DX Film Edge** | — | 读（写：zint） | **已支持解码** |
 
 有两点必须单独说明，因为只对比两边的 `BarcodeFormat` 枚举会得出错误结论：
 
@@ -79,8 +79,8 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | 0 | 重定位后的基线、许可与出处声明、`BarcodeFormat` 常量、构建与测试骨架 | **已完成** |
 | 1 | Telepen，全 ASCII 与压缩数字两种模式 | **已完成** |
 | 2 | DataBar Limited | **已完成** |
-| 3 | DX Film Edge | 进行中 |
-| 4 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | |
+| 3 | DX Film Edge | **已完成** |
+| 4 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | 进行中 |
 | 5 | Micro QR + rMQR（共用检测层）、QR Code Model 1 | |
 | 6 | MicroPDF417 + Compact PDF417 | |
 | 7 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量、Aztec Rune | |
@@ -93,6 +93,11 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 DataBar 变体并列。它的结构约束强得多——guard 比例、89 项校验字符表、两个数据
 字符之间的 mod-89 交叉校验、以及 GS1 校验位必须同时成立——而且把它加进默认集
 后，上游整个 blackbox 语料（含 falsepositives 套件）没有出现任何误读。
+
+DX Film Edge 和 Telepen 一样按需启用，但理由不同：它是这里唯一跨扫描行带状态的
+reader。一个符号由**不同行**上的两条轨道组成——确定模块尺寸的时钟轨，和它旁边的
+数据轨——没看到时钟轨就读不了数据轨。这份状态的作用域被限制在一次 `decode()` 调用
+内，调用前后都会清空，不会泄漏到下一张图。
 
 尚未实现格式的 `BarcodeFormat` 常量已经存在，以便下游代码和本项目内部能针对稳定 API 编译。**标注"计划中"的常量不会被任何 Reader 返回**——现在把它放进 `POSSIBLE_FORMATS` 不会有任何效果。每个常量的 Javadoc 都写明了当前状态。
 

@@ -105,7 +105,7 @@ public enum BarcodeFormat {
 
   /**
    * DX Film Edge, the DX barcode along the edge of 135 film.
-   * <p>Not implemented yet.
+   * <p>Implemented, see {@code com.barcodemate.zxing.oned.DXFilmEdgeReader}.
    */
   DX_FILM_EDGE,
 

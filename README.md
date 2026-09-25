@@ -63,7 +63,7 @@ Read = can decode, Write = can generate. The "ZXing-C++" column distinguishes na
 | DataBar Expanded / Expanded Stacked | read | read (write: zint) | read |
 | **DataBar Limited** | — | read (write: zint) | **read** |
 | **Telepen / Alpha / Numeric** | — | read (write: zint) | **read** |
-| **DX Film Edge** | — | read (write: zint) | **planned** |
+| **DX Film Edge** | — | read (write: zint) | **read** |
 
 Two differences worth calling out, because comparing the two `BarcodeFormat` enums alone will mislead you:
 
@@ -79,13 +79,13 @@ Ordered by shared foundation, not by perceived value: every 2D format below depe
 | 0 | Relocated baseline, license/attribution, `BarcodeFormat` constants, build & test harness | **done** |
 | 1 | Telepen, full ASCII and compressed numeric | **done** |
 | 2 | DataBar Limited | **done** |
-| 3 | DX Film Edge | next |
-| 4 | Geometry layer ported from zxing-cpp (`Pattern`, `BitMatrixCursor`, `RegressionLine`, `ConcentricFinder`, `GridSampler`, `Quadrilateral`) | |
+| 3 | DX Film Edge | **done** |
+| 4 | Geometry layer ported from zxing-cpp (`Pattern`, `BitMatrixCursor`, `RegressionLine`, `ConcentricFinder`, `GridSampler`, `Quadrilateral`) | next |
 | 5 | Micro QR + rMQR (shared detector), QR Code Model 1 | |
 | 6 | MicroPDF417 + Compact PDF417 | |
 | 7 | Code 32, PZN, ITF-14, ISBN, Code 39 Extended constant, Aztec Rune | |
 
-The three 1D formats come first because none of them needs the 2D geometry
+The three 1D formats came first because none of them needs the 2D geometry
 layer: ZXing's existing `OneDReader` row scanning hosts them directly. Every
 remaining 2D format waits on stage 4, which is ~1500 lines of infrastructure
 that decodes nothing on its own, so shipping working decoders before that
@@ -97,6 +97,13 @@ constrained -- guard proportions, an 89 entry check character table, a mod 89
 cross-check between the two data characters and a GS1 check digit all have to
 agree -- and adding it caused no misreads across the upstream blackbox
 corpus, including the falsepositives suites.
+
+DX Film Edge is opt-in like Telepen, for a different reason: alone among the
+readers here it carries state between scan lines. A symbol is two tracks on
+*different* rows -- a clock track that establishes the module size, and the
+data track beside it -- so the data cannot be read until the clock next to it
+has been seen. That state is scoped to a single `decode()` call and cleared
+before and after it, so nothing leaks into the next image.
 
 The `BarcodeFormat` constants for unimplemented formats already exist so that downstream code and this project's own internals can compile against a stable API. **A constant marked "planned" is never returned by any reader** — putting it in `POSSIBLE_FORMATS` currently has no effect. Each constant's Javadoc states its status.
 

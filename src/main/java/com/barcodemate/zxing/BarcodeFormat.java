@@ -90,7 +90,7 @@ public enum BarcodeFormat {
   /**
    * GS1 DataBar Limited, ISO/IEC 24724. Upstream Java calls the DataBar family
    * RSS ({@link #RSS_14}, {@link #RSS_EXPANDED}); this uses the current name.
-   * <p>Not implemented yet.
+   * <p>Implemented, see {@code com.barcodemate.zxing.oned.rss.DataBarLimitedReader}.
    */
   DATA_BAR_LIMITED,
 

@@ -23,6 +23,7 @@ import com.barcodemate.zxing.Reader;
 import com.barcodemate.zxing.ReaderException;
 import com.barcodemate.zxing.Result;
 import com.barcodemate.zxing.common.BitArray;
+import com.barcodemate.zxing.oned.rss.DataBarLimitedReader;
 import com.barcodemate.zxing.oned.rss.RSS14Reader;
 import com.barcodemate.zxing.oned.rss.expanded.RSSExpandedReader;
 
@@ -75,6 +76,9 @@ public final class MultiFormatOneDReader extends OneDReader {
       if (possibleFormats.contains(BarcodeFormat.RSS_EXPANDED)) {
         readers.add(new RSSExpandedReader());
       }
+      if (possibleFormats.contains(BarcodeFormat.DATA_BAR_LIMITED)) {
+        readers.add(new DataBarLimitedReader());
+      }
       // Telepen is deliberately absent from the default set below. Its start
       // pattern is ten narrow elements, which is weak enough that scanning for
       // it unconditionally would raise the misread rate of every other format.
@@ -97,6 +101,7 @@ public final class MultiFormatOneDReader extends OneDReader {
       readers.add(new ITFReader());
       readers.add(new RSS14Reader());
       readers.add(new RSSExpandedReader());
+      readers.add(new DataBarLimitedReader());
     }
     this.readers = readers.toArray(EMPTY_ONED_ARRAY);
   }

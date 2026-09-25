@@ -61,7 +61,7 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | DataBar / Omni（RSS-14） | 读 | 读（写：zint） | 读 |
 | DataBar Stacked / Stacked Omni | 读（*声明支持，待实测核对*） | 读（写：zint） | 读 |
 | DataBar Expanded / Expanded Stacked | 读 | 读（写：zint） | 读 |
-| **DataBar Limited** | — | 读（写：zint） | **计划中** |
+| **DataBar Limited** | — | 读（写：zint） | **已支持解码** |
 | **Telepen / Alpha / Numeric** | — | 读（写：zint） | **已支持解码** |
 | **DX Film Edge** | — | 读（写：zint） | **计划中** |
 
@@ -78,16 +78,21 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 |---|---|---|
 | 0 | 重定位后的基线、许可与出处声明、`BarcodeFormat` 常量、构建与测试骨架 | **已完成** |
 | 1 | Telepen，全 ASCII 与压缩数字两种模式 | **已完成** |
-| 2 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | 进行中 |
-| 3 | Micro QR + rMQR（共用检测层）、QR Code Model 1 | |
-| 4 | MicroPDF417 + Compact PDF417 | |
-| 5 | DX Film Edge + DataBar Limited | |
-| 6 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量、Aztec Rune | |
+| 2 | DataBar Limited | **已完成** |
+| 3 | DX Film Edge | 进行中 |
+| 4 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | |
+| 5 | Micro QR + rMQR（共用检测层）、QR Code Model 1 | |
+| 6 | MicroPDF417 + Compact PDF417 | |
+| 7 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量、Aztec Rune | |
 
-Telepen 先做，是因为它是这里唯一完全不需要 2D 几何层的格式——ZXing 现成的
-`OneDReader` 行扫描框架直接就能承载它。其余二维格式都卡在阶段 2，而那是约
-1500 行本身不解码任何东西的基础设施；先交付一个真正能用的解码器，比严格
-按依赖顺序推进更有价值。
+三个一维格式先做，是因为它们都不需要 2D 几何层——ZXing 现成的 `OneDReader`
+行扫描框架直接就能承载。其余二维格式都卡在阶段 4，而那是约 1500 行本身不解码
+任何东西的基础设施；先交付能用的解码器，比严格按依赖顺序推进更有价值。
+
+与 Telepen 不同，**DataBar Limited 在默认扫描集里**，和上游已经默认扫描的其他
+DataBar 变体并列。它的结构约束强得多——guard 比例、89 项校验字符表、两个数据
+字符之间的 mod-89 交叉校验、以及 GS1 校验位必须同时成立——而且把它加进默认集
+后，上游整个 blackbox 语料（含 falsepositives 套件）没有出现任何误读。
 
 尚未实现格式的 `BarcodeFormat` 常量已经存在，以便下游代码和本项目内部能针对稳定 API 编译。**标注"计划中"的常量不会被任何 Reader 返回**——现在把它放进 `POSSIBLE_FORMATS` 不会有任何效果。每个常量的 Javadoc 都写明了当前状态。
 

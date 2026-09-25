@@ -42,6 +42,7 @@
     <baseline.zxing.java>zxing-3.5.4</baseline.zxing.java>
     <baseline.zxing.cpp>v3.1.1</baseline.zxing.cpp>
     <zxing.blackbox.base>${project.basedir}/upstream-zxing-java/core</zxing.blackbox.base>
+    <zxing.cpp.samples.base>${project.basedir}/upstream-zxing-cpp/test/samples</zxing.cpp.samples.base>
   </properties>
 
   <dependencies>
@@ -67,6 +68,7 @@
           -->
           <systemPropertyVariables>
             <zxing.blackbox.base>${zxing.blackbox.base}</zxing.blackbox.base>
+            <zxing.cpp.samples.base>${zxing.cpp.samples.base}</zxing.cpp.samples.base>
           </systemPropertyVariables>
         </configuration>
       </plugin>

@@ -96,7 +96,7 @@ public final class TelepenReader extends OneDReader {
     int size = row.getSize();
     int[] runs = new int[size + 2];
     int[] runStarts = new int[size + 2];
-    int runCount = toRuns(row, runs, runStarts);
+    int runCount = RunLengths.toRuns(row, runs, runStarts);
 
     int[] window = new int[START_PATTERNS[0].length];
 
@@ -383,33 +383,6 @@ public final class TelepenReader extends OneDReader {
     // start == 1 means the symbol begins at the row edge, which ZXing treats
     // as an acceptable quiet zone throughout this package.
     return start == 1 || runs[start - 1] >= MIN_QUIET_ZONE_MODULES * moduleWidth;
-  }
-
-  /**
-   * Converts a row to run lengths. Index 0 is the leading white run, which is
-   * zero when the row starts on a bar, so bars always sit at odd indices.
-   */
-  private static int toRuns(BitArray row, int[] runs, int[] runStarts) {
-    int size = row.getSize();
-    int count = 0;
-    int index = 0;
-    boolean white = true;
-
-    runStarts[0] = 0;
-    while (index < size) {
-      int next = white ? row.getNextSet(index) : row.getNextUnset(index);
-      runs[count] = next - index;
-      runStarts[count] = index;
-      count++;
-      index = next;
-      white = !white;
-    }
-    if (count == 0) {
-      runs[0] = 0;
-      runStarts[0] = 0;
-      count = 1;
-    }
-    return count;
   }
 
   private static int sum(int[] values) {

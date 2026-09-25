@@ -26,6 +26,7 @@ import com.barcodemate.zxing.ReaderException;
 import com.barcodemate.zxing.Result;
 import com.barcodemate.zxing.ResultMetadataType;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -64,13 +65,29 @@ public abstract class AbstractBlackBoxTestCase extends Assert {
   private final List<TestResult> testResults;
   private final EnumMap<DecodeHintType,Object> hints = new EnumMap<>(DecodeHintType.class);
 
+  /**
+   * barcodemate-zxing-extended 的改动：上游 132MB 测试图片集不纳入本仓库，
+   * 通过系统属性 {@code zxing.blackbox.base} 指向外部的上游检出目录（其 {@code core} 目录）。
+   * 若图片集不可用，依赖它的测试以 JUnit assumption 跳过，而不是失败——
+   * 这样在没有上游检出的环境里 {@code mvn test} 仍然是绿的，且不会假装这些用例通过了。
+   */
   public static Path buildTestBase(String testBasePathSuffix) {
+    String configuredBase = System.getProperty("zxing.blackbox.base");
+    if (configuredBase != null && !configuredBase.isEmpty()) {
+      Path configured = Paths.get(configuredBase).resolve(testBasePathSuffix);
+      if (Files.exists(configured)) {
+        return configured;
+      }
+    }
     // A little workaround to prevent aggravation in my IDE
     Path testBase = Paths.get(testBasePathSuffix);
     if (!Files.exists(testBase)) {
       // try starting with 'core' since the test base is often given as the project root
       testBase = Paths.get("core").resolve(testBasePathSuffix);
     }
+    Assume.assumeTrue(
+        "上游测试图片集不可用，跳过。用 -Dzxing.blackbox.base=<上游 zxing 检出的 core 目录> 启用：" + testBasePathSuffix,
+        Files.exists(testBase));
     return testBase;
   }
 

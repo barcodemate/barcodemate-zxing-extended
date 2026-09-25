@@ -75,70 +75,93 @@ public enum BarcodeFormat {
   UPC_EAN_EXTENSION,
 
   // ---------------------------------------------------------------------------
-  // barcodemate-zxing-extended 新增：ZXing-C++ 可解码而 ZXing Java 缺失的格式。
+  // barcodemate-zxing-extended: formats ZXing-C++ can decode and ZXing for
+  // Java cannot.
   //
-  // 这些常量一律追加在末尾，不插入上游的字母序中，以保持已有常量的 ordinal() 不变
-  // （上游注释要求按字母序排列，此处刻意不遵守，理由即向后兼容）。
+  // These are appended at the end rather than merged into the alphabetical
+  // order the comment above asks for, so that the ordinal() of every
+  // pre-existing constant stays what it is in com.google.zxing:core 3.5.4.
   //
-  // 每项的实现状态见 README 的路线图表格。标注"尚未实现"的常量当前不会被任何
-  // Reader 返回，把它放进 DecodeHintType.POSSIBLE_FORMATS 不会有任何效果。
-  // 实现完成后此处的状态注释会同步更新。
+  // Each constant's Javadoc states whether it is implemented. A constant
+  // marked as not implemented is never returned by any reader, and putting it
+  // in DecodeHintType.POSSIBLE_FORMATS has no effect.
   // ---------------------------------------------------------------------------
 
   /**
-   * GS1 DataBar Limited, ISO/IEC 24724。上游 Java 的 DataBar 家族沿用旧称 RSS
-   * （{@link #RSS_14}、{@link #RSS_EXPANDED}），此处采用规范现名。
-   * <p>状态：尚未实现。
+   * GS1 DataBar Limited, ISO/IEC 24724. Upstream Java calls the DataBar family
+   * RSS ({@link #RSS_14}, {@link #RSS_EXPANDED}); this uses the current name.
+   * <p>Not implemented yet.
    */
   DATA_BAR_LIMITED,
 
   /**
-   * Telepen，含 Alpha 与 Numeric 两种模式（同一解码器）。
-   * <p>状态：尚未实现。
+   * Telepen, requesting both of its data modes. Use this in
+   * {@link DecodeHintType#POSSIBLE_FORMATS} to accept either; results are
+   * reported as {@link #TELEPEN_ALPHA} or {@link #TELEPEN_NUMERIC}, never as
+   * this constant.
+   * <p>Implemented, see {@code com.barcodemate.zxing.oned.TelepenReader}.
    */
   TELEPEN,
 
   /**
-   * DX Film Edge，135 胶片边缘上的 DX 条码。
-   * <p>状态：尚未实现。
+   * DX Film Edge, the DX barcode along the edge of 135 film.
+   * <p>Not implemented yet.
    */
   DX_FILM_EDGE,
 
   /**
-   * Compact PDF417（右侧行指示符被截断的 PDF417 变体）。
-   * <p>状态：尚未实现。
+   * Compact PDF417, the PDF417 variant whose right row indicators are
+   * truncated.
+   * <p>Not implemented yet.
    */
   COMPACT_PDF_417,
 
   /**
-   * MicroPDF417, ISO/IEC 24728。使用 RAP（Row Address Patterns）寻址，
-   * 不是"缩小版 PDF417"。
-   * <p>状态：尚未实现。
+   * MicroPDF417, ISO/IEC 24728. Addressed by RAP (Row Address Patterns); it is
+   * not a scaled-down PDF417.
+   * <p>Not implemented yet.
    */
   MICRO_PDF_417,
 
   /**
-   * Aztec Rune，11×11 的定长 Aztec 变体。
-   * <p>状态：尚未实现。
+   * Aztec Rune, the fixed 11x11 Aztec variant.
+   * <p>Not implemented yet.
    */
   AZTEC_RUNE,
 
   /**
-   * QR Code Model 1，{@link #QR_CODE}（Model 2）之前的初版 QR。
-   * <p>状态：尚未实现。注意 ZXing-C++ 亦无法生成此格式，测试图片需另行取得。
+   * QR Code Model 1, the original QR Code that predates {@link #QR_CODE}
+   * (Model 2).
+   * <p>Not implemented yet. Note that ZXing-C++ cannot generate this format
+   * either, so test symbols have to be sourced elsewhere.
    */
   QR_CODE_MODEL_1,
 
   /**
-   * Micro QR Code, ISO/IEC 18004 附录。
-   * <p>状态：尚未实现。
+   * Micro QR Code, ISO/IEC 18004 annex.
+   * <p>Not implemented yet.
    */
   MICRO_QR_CODE,
 
   /**
-   * rMQR Code（矩形微型 QR）, ISO/IEC 23941。
-   * <p>状态：尚未实现。
+   * rMQR Code (rectangular micro QR), ISO/IEC 23941.
+   * <p>Not implemented yet.
    */
-  RMQR_CODE
+  RMQR_CODE,
+
+  /**
+   * Telepen carrying full ASCII data. Returned by the reader; request it
+   * directly to reject compressed numeric symbols.
+   * <p>Implemented.
+   */
+  TELEPEN_ALPHA,
+
+  /**
+   * Telepen carrying compressed numeric data, where one codeword holds two
+   * digits. Returned by the reader; request it directly to reject full ASCII
+   * symbols.
+   * <p>Implemented.
+   */
+  TELEPEN_NUMERIC
 
 }

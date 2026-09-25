@@ -75,6 +75,18 @@ public final class MultiFormatOneDReader extends OneDReader {
       if (possibleFormats.contains(BarcodeFormat.RSS_EXPANDED)) {
         readers.add(new RSSExpandedReader());
       }
+      // Telepen is deliberately absent from the default set below. Its start
+      // pattern is ten narrow elements, which is weak enough that scanning for
+      // it unconditionally would raise the misread rate of every other format.
+      // Ask for it explicitly until that has been measured against the
+      // falsepositives suites.
+      boolean telepenAlpha = possibleFormats.contains(BarcodeFormat.TELEPEN)
+          || possibleFormats.contains(BarcodeFormat.TELEPEN_ALPHA);
+      boolean telepenNumeric = possibleFormats.contains(BarcodeFormat.TELEPEN)
+          || possibleFormats.contains(BarcodeFormat.TELEPEN_NUMERIC);
+      if (telepenAlpha || telepenNumeric) {
+        readers.add(new TelepenReader(telepenAlpha, telepenNumeric));
+      }
     }
     if (readers.isEmpty()) {
       readers.add(new MultiFormatUPCEANReader(hints));

@@ -62,7 +62,7 @@ Read = can decode, Write = can generate. The "ZXing-C++" column distinguishes na
 | DataBar Stacked / Stacked Omni | read *(claimed; being verified)* | read (write: zint) | read |
 | DataBar Expanded / Expanded Stacked | read | read (write: zint) | read |
 | **DataBar Limited** | — | read (write: zint) | **planned** |
-| **Telepen / Alpha / Numeric** | — | read (write: zint) | **planned** |
+| **Telepen / Alpha / Numeric** | — | read (write: zint) | **read** |
 | **DX Film Edge** | — | read (write: zint) | **planned** |
 
 Two differences worth calling out, because comparing the two `BarcodeFormat` enums alone will mislead you:
@@ -77,13 +77,37 @@ Ordered by shared foundation, not by perceived value: every 2D format below depe
 | Stage | Contents | Status |
 |---|---|---|
 | 0 | Relocated baseline, license/attribution, `BarcodeFormat` constants, build & test harness | **done** |
-| 1 | Geometry layer ported from zxing-cpp (`Pattern`, `BitMatrixCursor`, `RegressionLine`, `ConcentricFinder`, `GridSampler`, `Quadrilateral`) | next |
-| 2 | Micro QR + rMQR (shared detector), QR Code Model 1 | |
-| 3 | MicroPDF417 + Compact PDF417 | |
-| 4 | Telepen + DX Film Edge + DataBar Limited | |
-| 5 | Code 32, PZN, ITF-14, ISBN, Code 39 Extended constant, Aztec Rune | |
+| 1 | Telepen, full ASCII and compressed numeric | **done** |
+| 2 | Geometry layer ported from zxing-cpp (`Pattern`, `BitMatrixCursor`, `RegressionLine`, `ConcentricFinder`, `GridSampler`, `Quadrilateral`) | next |
+| 3 | Micro QR + rMQR (shared detector), QR Code Model 1 | |
+| 4 | MicroPDF417 + Compact PDF417 | |
+| 5 | DX Film Edge + DataBar Limited | |
+| 6 | Code 32, PZN, ITF-14, ISBN, Code 39 Extended constant, Aztec Rune | |
 
-The nine `BarcodeFormat` constants for unimplemented formats already exist so that downstream code and this project's own internals can compile against a stable API. **A constant marked "planned" is never returned by any reader** — putting it in `POSSIBLE_FORMATS` currently has no effect. Each constant's Javadoc states its status.
+Telepen went first because it is the one format here that needs none of the
+2D geometry layer: ZXing's existing `OneDReader` row scanning hosts it
+directly. Every remaining 2D format waits on stage 2, which is ~1500 lines of
+infrastructure that decodes nothing on its own, so shipping one working
+decoder before that stretch seemed worth more than strict dependency order.
+
+The `BarcodeFormat` constants for unimplemented formats already exist so that downstream code and this project's own internals can compile against a stable API. **A constant marked "planned" is never returned by any reader** — putting it in `POSSIBLE_FORMATS` currently has no effect. Each constant's Javadoc states its status.
+
+### Using Telepen
+
+Telepen must be requested explicitly; it is not in the default scan set:
+
+```java
+Map<DecodeHintType,Object> hints = new EnumMap<>(DecodeHintType.class);
+hints.put(DecodeHintType.POSSIBLE_FORMATS, Collections.singletonList(BarcodeFormat.TELEPEN));
+Result result = new MultiFormatReader().decode(bitmap, hints);
+```
+
+Its start pattern is ten narrow elements, which is weak enough that scanning
+for it unconditionally would raise the misread rate of every other format.
+That stays opt-in until it has been measured against the falsepositives
+suites. Request `TELEPEN` for either data mode, or `TELEPEN_ALPHA` /
+`TELEPEN_NUMERIC` to accept only one. Results carry the AIM mode in
+`ResultMetadataType.SYMBOLOGY_IDENTIFIER` (`]B0` through `]B4`).
 
 ## How correctness is established
 

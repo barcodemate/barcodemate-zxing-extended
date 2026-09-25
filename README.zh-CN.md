@@ -62,7 +62,7 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | DataBar Stacked / Stacked Omni | 读（*声明支持，待实测核对*） | 读（写：zint） | 读 |
 | DataBar Expanded / Expanded Stacked | 读 | 读（写：zint） | 读 |
 | **DataBar Limited** | — | 读（写：zint） | **计划中** |
-| **Telepen / Alpha / Numeric** | — | 读（写：zint） | **计划中** |
+| **Telepen / Alpha / Numeric** | — | 读（写：zint） | **已支持解码** |
 | **DX Film Edge** | — | 读（写：zint） | **计划中** |
 
 有两点必须单独说明，因为只对比两边的 `BarcodeFormat` 枚举会得出错误结论：
@@ -77,13 +77,34 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | 阶段 | 内容 | 状态 |
 |---|---|---|
 | 0 | 重定位后的基线、许可与出处声明、`BarcodeFormat` 常量、构建与测试骨架 | **已完成** |
-| 1 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | 进行中 |
-| 2 | Micro QR + rMQR（共用检测层）、QR Code Model 1 | |
-| 3 | MicroPDF417 + Compact PDF417 | |
-| 4 | Telepen + DX Film Edge + DataBar Limited | |
-| 5 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量、Aztec Rune | |
+| 1 | Telepen，全 ASCII 与压缩数字两种模式 | **已完成** |
+| 2 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | 进行中 |
+| 3 | Micro QR + rMQR（共用检测层）、QR Code Model 1 | |
+| 4 | MicroPDF417 + Compact PDF417 | |
+| 5 | DX Film Edge + DataBar Limited | |
+| 6 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量、Aztec Rune | |
 
-尚未实现格式的 9 个 `BarcodeFormat` 常量已经存在，以便下游代码和本项目内部能针对稳定 API 编译。**标注"计划中"的常量不会被任何 Reader 返回**——现在把它放进 `POSSIBLE_FORMATS` 不会有任何效果。每个常量的 Javadoc 都写明了当前状态。
+Telepen 先做，是因为它是这里唯一完全不需要 2D 几何层的格式——ZXing 现成的
+`OneDReader` 行扫描框架直接就能承载它。其余二维格式都卡在阶段 2，而那是约
+1500 行本身不解码任何东西的基础设施；先交付一个真正能用的解码器，比严格
+按依赖顺序推进更有价值。
+
+尚未实现格式的 `BarcodeFormat` 常量已经存在，以便下游代码和本项目内部能针对稳定 API 编译。**标注"计划中"的常量不会被任何 Reader 返回**——现在把它放进 `POSSIBLE_FORMATS` 不会有任何效果。每个常量的 Javadoc 都写明了当前状态。
+
+### 使用 Telepen
+
+Telepen 必须显式请求，它不在默认扫描集里：
+
+```java
+Map<DecodeHintType,Object> hints = new EnumMap<>(DecodeHintType.class);
+hints.put(DecodeHintType.POSSIBLE_FORMATS, Collections.singletonList(BarcodeFormat.TELEPEN));
+Result result = new MultiFormatReader().decode(bitmap, hints);
+```
+
+它的起始图形是十个窄元素，特征偏弱；无条件参与扫描会抬高其他所有格式的误读率。
+在用 falsepositives 测试集实测之前，它保持按需启用。请求 `TELEPEN` 表示两种数据
+模式都接受，也可以用 `TELEPEN_ALPHA` / `TELEPEN_NUMERIC` 只接受其中一种。识别结果
+的 AIM 模式记录在 `ResultMetadataType.SYMBOLOGY_IDENTIFIER` 里（`]B0` 到 `]B4`）。
 
 ## 正确性是怎么建立的
 

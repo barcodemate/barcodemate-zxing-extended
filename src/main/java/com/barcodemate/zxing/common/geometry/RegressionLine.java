@@ -47,6 +47,16 @@ public final class RegressionLine {
     evaluate(two);
   }
 
+  /**
+   * The line fitted to a slice of a point list, without keeping the points.
+   * Mirrors upstream's iterator-range constructor.
+   */
+  public static RegressionLine through(List<PointF> pts, int from, int to) {
+    RegressionLine line = new RegressionLine();
+    line.evaluate(pts.subList(from, to));
+    return line;
+  }
+
   public List<PointF> points() {
     return points;
   }

@@ -21,6 +21,7 @@ import com.barcodemate.zxing.Result;
 import com.barcodemate.zxing.ResultMetadataType;
 import com.barcodemate.zxing.ResultPoint;
 import com.barcodemate.zxing.common.BitArray;
+import com.barcodemate.zxing.common.geometry.Patterns;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -290,51 +291,23 @@ public final class DXFilmEdgeReader extends OneDReader {
     }
   }
 
-  /**
-   * Proportional pattern match, following zxing-cpp's IsPattern: the elements
-   * are compared against the pattern scaled by the module size derived from
-   * the view itself, with a half-module tolerance plus a constant that keeps
-   * near-one-module symbols from failing on quantisation alone.
-   */
   private static boolean matches(int[] runs, int runCount, int offset, int[] pattern, int sum, double minQuietZone) {
     if (offset + pattern.length > runCount) {
       return false;
     }
-    double width = 0;
-    for (int i = 0; i < pattern.length; i++) {
-      width += runs[offset + i];
-    }
-    if (sum > pattern.length && width < sum) {
-      return false;
-    }
-    double moduleSize = width / sum;
-    int spaceInFront = offset == 1 ? Integer.MAX_VALUE : runs[offset - 1];
-    if (minQuietZone > 0 && spaceInFront < minQuietZone * moduleSize - 1) {
-      return false;
-    }
-    double threshold = moduleSize * 0.5 + 0.5;
-    for (int i = 0; i < pattern.length; i++) {
-      if (Math.abs(runs[offset + i] - pattern[i] * moduleSize) > threshold) {
-        return false;
-      }
-    }
-    return true;
+    // Index 1 is the first bar of the row, so there is no measurable white in
+    // front of it; treat that as an unlimited quiet zone, as upstream does.
+    int spaceInFront = offset == 1 ? Patterns.NO_QUIET_ZONE_LIMIT : runs[offset - 1];
+    return Patterns.isPattern(runs, offset, pattern, sum, spaceInFront, minQuietZone, 0) != 0;
   }
 
   private static boolean isRightGuard(int[] runs, int runCount, int offset, int[] pattern, double moduleSize) {
     if (offset + pattern.length > runCount) {
       return false;
     }
-    double width = 0;
-    for (int i = 0; i < pattern.length; i++) {
-      width += runs[offset + i];
-    }
-    double guardModule = width / pattern.length;
-    double threshold = guardModule * 0.5 + 0.5;
-    for (int i = 0; i < pattern.length; i++) {
-      if (Math.abs(runs[offset + i] - pattern[i] * guardModule) > threshold) {
-        return false;
-      }
+    if (Patterns.isPattern(runs, offset, pattern, Patterns.sum(pattern),
+        Patterns.NO_QUIET_ZONE_LIMIT, 0, 0) == 0) {
+      return false;
     }
     int after = offset + pattern.length;
     return after >= runCount || runs[after] >= DATA_QUIET_ZONE * moduleSize - 1;

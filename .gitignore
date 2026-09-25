@@ -1,0 +1,8 @@
+target/
+
+# 上游参考检出（本地对比与 blackbox 测试用，不随本仓库分发）
+upstream-zxing-java/
+upstream-zxing-cpp/
+
+# 立项备忘，仅本地保留，不发布
+2026-09-25-ZXing-扩展.html

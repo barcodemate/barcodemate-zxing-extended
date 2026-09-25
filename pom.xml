@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2026 BarcodeMate
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.barcodemate</groupId>
+  <artifactId>zxing-extended</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>barcodemate-zxing-extended</name>
+  <description>ZXing Java 3.5.4 的派生作品，补齐 ZXing-C++ 支持而 ZXing Java 缺失的条码格式解码能力。由 barcodemate.com 发布。</description>
+  <url>https://barcodemate.com/</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>8</maven.compiler.release>
+    <!-- 上游基线，见 README 与 NOTICE -->
+    <baseline.zxing.java>zxing-3.5.4</baseline.zxing.java>
+    <baseline.zxing.cpp>v3.1.1</baseline.zxing.cpp>
+    <zxing.blackbox.base>${project.basedir}/upstream-zxing-java/core</zxing.blackbox.base>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <!--
+            上游 blackbox 图片集（132MB）不纳入本仓库。默认指向本地上游检出；
+            不存在时相关用例自动跳过（见 AbstractBlackBoxTestCase.buildTestBase）。
+            其他检出位置用 -Dzxing.blackbox.base=<上游 zxing 检出的 core 目录> 覆盖。
+          -->
+          <systemPropertyVariables>
+            <zxing.blackbox.base>${zxing.blackbox.base}</zxing.blackbox.base>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

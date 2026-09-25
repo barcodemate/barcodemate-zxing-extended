@@ -1,0 +1,59 @@
+barcodemate-zxing-extended
+Copyright 2026 BarcodeMate (https://barcodemate.com)
+
+This product includes software developed by the ZXing authors.
+
+===============================================================================
+派生关系 / Derivation
+===============================================================================
+
+本项目是 ZXing (Java) 的派生作品，由 barcodemate.com 发布。
+
+  上游项目 : ZXing ("Zebra Crossing")
+  上游地址 : https://github.com/zxing/zxing
+  基线版本 : tag zxing-3.5.4 (2025-11-11), commit f651b0a
+  上游许可 : Apache License, Version 2.0
+  上游状态 : 该项目已由其作者宣布进入维护模式，不再接受新码制（symbology）
+             的扩展。原文见其 README："The project is in maintenance mode...
+             Only bug fixes and minor enhancements will be considered...
+             There is otherwise no active development or roadmap for this
+             project. It is 'DIY'."
+
+本项目对上游做了两类改动：
+
+  1. 包名重定位：com.google.zxing -> com.barcodemate.zxing
+     目的是让本项目与官方 artifact com.google.zxing:core 可以共存于同一
+     依赖树而不产生冲突。除包名外，上游代码逻辑未作改动。
+
+  2. 新增格式支持：补齐 ZXing-C++ 可解码而 ZXing Java 缺失的条码格式。
+     实现参照 ZXing-C++ 的算法，见下。
+
+所有源自上游的文件均保留其原始版权声明与 Apache-2.0 许可头。
+
+===============================================================================
+算法参考来源 / Algorithm reference
+===============================================================================
+
+新增格式的解码算法参照 ZXing-C++ 移植为纯 Java 实现：
+
+  项目   : zxing-cpp
+  地址   : https://github.com/zxing-cpp/zxing-cpp
+  基线   : tag v3.1.1 (2026-07-29), commit 287c85d
+  许可   : Apache License, Version 2.0
+
+移植自 ZXing-C++ 的文件在其文件头保留原始版权行（包括但不限于
+Nu-book Inc.、ZXing authors、Axel Waggershauser、gitlost）与 SPDX 标识。
+
+本项目不包含、不移植 zxing-cpp 中 core/src/libzint/ 目录下的代码。
+该目录源自 Zint (BSD-3-Clause)，且仅用于条码生成；本项目只做解码。
+
+===============================================================================
+测试资产 / Test assets
+===============================================================================
+
+上游 ZXing Java 的 blackbox 测试图片集（约 132 MB）不包含在本仓库中。
+运行这些测试需要一份上游检出，并通过系统属性指向它：
+
+  mvn test -Dzxing.blackbox.base=<上游 zxing 检出>/core
+
+图片集不可用时，依赖它的测试会以 JUnit assumption 跳过，而不是伪装通过。

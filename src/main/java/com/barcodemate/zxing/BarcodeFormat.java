@@ -119,7 +119,11 @@ public enum BarcodeFormat {
   /**
    * MicroPDF417, ISO/IEC 24728. Addressed by RAP (Row Address Patterns); it is
    * not a scaled-down PDF417.
-   * <p>Not implemented yet.
+   * <p><b>Experimental.</b> Implemented for upright symbols that fill the
+   * image, see {@code com.barcodemate.zxing.micropdf417.MicroPDF417Reader}.
+   * Rotated, skewed and photographed symbols are not read. Of upstream's ten
+   * sample images this reads three, with no misreads; that is a weaker footing
+   * than every other format here, and the README says why.
    */
   MICRO_PDF_417,
 

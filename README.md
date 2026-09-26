@@ -36,7 +36,7 @@ Read = can decode, Write = can generate. The "ZXing-C++" column distinguishes na
 |---|:-:|:-:|:-:|
 | PDF417 | read + write | read + write (native) | read + write |
 | Compact PDF417 | — | read (write: zint) | **planned** |
-| MicroPDF417 | — | read (write: zint) | **planned** |
+| **MicroPDF417** | — | read (write: zint) | **read** *(experimental, upright only)* |
 | Aztec | read + write | read + write (native) | read + write |
 | Aztec Rune | — | read (write: zint) | **planned** |
 | QR Code (Model 2) | read + write | read + write (native) | read + write |
@@ -108,6 +108,26 @@ has been seen. That state is scoped to a single `decode()` call and cleared
 before and after it, so nothing leaks into the next image.
 
 The `BarcodeFormat` constants for unimplemented formats already exist so that downstream code and this project's own internals can compile against a stable API. **A constant marked "planned" is never returned by any reader** — putting it in `POSSIBLE_FORMATS` currently has no effect. Each constant's Javadoc states its status.
+
+### MicroPDF417 is experimental
+
+It is marked so deliberately, and this is what that means.
+
+Every other format here rests on something external: ported upstream unit
+tests, or sample images that decode to expected text. MicroPDF417 has neither
+in any quantity. Upstream ships no unit tests for it at all, and of its ten
+sample images this reader decodes three -- the upright ones. The other seven
+are rotated, photographed at an angle, or otherwise need the general scanner
+that zxing-cpp has and this does not yet.
+
+What the three do establish is that the tables, the row addressing, the
+codeword reading and the error correction are right, because a symbol does not
+decode to its expected text by accident. What they do not establish is
+robustness. There are no misreads across the ten, which matters more than the
+three: refusing to answer is a limitation, answering wrongly is a defect.
+
+Treat it as a reader for generated images and crops, not for photographs, until
+the general scanner lands.
 
 ### Using Telepen
 

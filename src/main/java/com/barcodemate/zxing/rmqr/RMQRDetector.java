@@ -16,6 +16,8 @@ import com.barcodemate.zxing.ResultPoint;
 import com.barcodemate.zxing.common.BitMatrix;
 import com.barcodemate.zxing.common.DetectorResult;
 import com.barcodemate.zxing.common.geometry.BitMatrixCursorI;
+import com.barcodemate.zxing.common.geometry.ConcentricPattern;
+import com.barcodemate.zxing.common.geometry.FinderPatternFinder;
 import com.barcodemate.zxing.common.geometry.PointI;
 import com.barcodemate.zxing.common.geometry.Patterns;
 
@@ -51,6 +53,44 @@ public final class RMQRDetector {
   private static final int MIN_MODULES = 7;
 
   private RMQRDetector() {
+  }
+
+  /**
+   * Detects a symbol anywhere in the image, at any rotation.
+   *
+   * <p>The pure path is tried first, being cheap and covering the common case
+   * of an image that holds nothing but the symbol; failing that, finder
+   * patterns are searched for and each is sampled in all four orientations.</p>
+   */
+  public static DetectorResult detect(BitMatrix image) throws NotFoundException {
+    try {
+      return detectPure(image);
+    } catch (NotFoundException notPure) {
+      // Fall through to the general search.
+    }
+    DetectorResult result = search(image);
+    if (result != null) {
+      return result;
+    }
+    // Symbols printed light on dark are legal and do occur. Inverting costs
+    // one pass and is only reached when the normal one found nothing.
+    BitMatrix inverted = image.clone();
+    inverted.flip();
+    result = search(inverted);
+    if (result != null) {
+      return result;
+    }
+    throw NotFoundException.getNotFoundInstance();
+  }
+
+  private static DetectorResult search(BitMatrix image) {
+    for (ConcentricPattern finder : FinderPatternFinder.find(image, true)) {
+      DetectorResult result = RMQRSampler.sample(image, finder);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
   }
 
   /**

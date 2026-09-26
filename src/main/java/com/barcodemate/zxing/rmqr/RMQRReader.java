@@ -41,7 +41,7 @@ public final class RMQRReader implements Reader {
   public Result decode(BinaryBitmap image, Map<DecodeHintType,?> hints)
       throws NotFoundException, ChecksumException, FormatException {
 
-    DetectorResult detected = RMQRDetector.detectPure(image.getBlackMatrix());
+    DetectorResult detected = RMQRDetector.detect(image.getBlackMatrix());
     DecoderResult decoded = RMQRDecoder.decode(detected.getBits());
 
     ResultPoint[] points = detected.getPoints();

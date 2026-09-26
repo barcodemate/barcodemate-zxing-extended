@@ -161,6 +161,37 @@ public final class RMQRDetectorTestCase {
     }
   }
 
+  @Test
+  public void testDetectsRotatedSymbols() throws Exception {
+    // rMQR is the hardest case for this: one finder pattern, and a symbol that
+    // is not square, so neither the orientation nor the shape can be assumed.
+    // Both come out of the format information, read in all four orientations.
+    for (int quarterTurns = 0; quarterTurns < 4; quarterTurns++) {
+      BitMatrix image = render(R7X43M, 6, 30);
+      for (int turn = 0; turn < quarterTurns; turn++) {
+        image = rotate90(image);
+      }
+      DetectorResult detected = RMQRDetector.detect(image);
+      assertEquals("after " + quarterTurns + " quarter turns",
+          "ABCDEFG", RMQRDecoder.decode(detected.getBits()).getText());
+    }
+  }
+
+  /** Rotates a quarter turn clockwise. */
+  private static BitMatrix rotate90(BitMatrix source) {
+    int width = source.getWidth();
+    int height = source.getHeight();
+    BitMatrix rotated = new BitMatrix(height, width);
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        if (source.get(x, y)) {
+          rotated.set(height - 1 - y, x);
+        }
+      }
+    }
+    return rotated;
+  }
+
   private static BitMatrix render(String[] rows, int moduleSize, int quietZone) {
     int width = rows[0].length() * moduleSize + 2 * quietZone;
     int height = rows.length * moduleSize + 2 * quietZone;

@@ -41,8 +41,8 @@ Read = can decode, Write = can generate. The "ZXing-C++" column distinguishes na
 | **Aztec Rune** | — | read (write: zint) | **read** |
 | QR Code (Model 2) | read + write | read + write (native) | read + write |
 | **QR Code Model 1** | — | read (cannot write) | **read** *(one sample verified)* |
-| **Micro QR Code** | — | read (write: zint) | **read** *(upright images)* |
-| **rMQR Code** | — | read (write: zint) | **read** *(upright images)* |
+| **Micro QR Code** | — | read (write: zint) | **read** |
+| **rMQR Code** | — | read (write: zint) | **read** |
 | Data Matrix (incl. DMRE) | read + write | read + write (native) | read + write |
 | MaxiCode | read | read (write: zint) | read |
 

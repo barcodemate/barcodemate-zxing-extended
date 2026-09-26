@@ -152,17 +152,18 @@ public enum BarcodeFormat {
 
   /**
    * Micro QR Code, ISO/IEC 18004 annex.
-   * <p>Implemented, see {@code com.barcodemate.zxing.microqr.MicroQRReader}.
-   * As with {@link #RMQR_CODE}, the detector currently handles upright,
-   * unrotated images only, so request this format explicitly.
+   * <p>Implemented, see {@code com.barcodemate.zxing.microqr.MicroQRReader},
+   * at any rotation. Request it explicitly; it is not in the default scan
+   * set.
    */
   MICRO_QR_CODE,
 
   /**
    * rMQR Code (rectangular micro QR), ISO/IEC 23941.
-   * <p>Implemented, see {@code com.barcodemate.zxing.rmqr.RMQRReader}. The
-   * detector currently handles upright, unrotated images only, so request this
-   * format explicitly; it is not in the default scan set.
+   * <p>Implemented, see {@code com.barcodemate.zxing.rmqr.RMQRReader}, at any
+   * rotation and light on dark as well as dark on light. Request it
+   * explicitly; it is not in the default scan set, since scanning for a
+   * one-finder-pattern format costs every caller a pass.
    */
   RMQR_CODE,
 

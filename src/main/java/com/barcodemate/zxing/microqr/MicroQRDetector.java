@@ -15,6 +15,8 @@ import com.barcodemate.zxing.ResultPoint;
 import com.barcodemate.zxing.common.BitMatrix;
 import com.barcodemate.zxing.common.DetectorResult;
 import com.barcodemate.zxing.common.geometry.BitMatrixCursorI;
+import com.barcodemate.zxing.common.geometry.ConcentricPattern;
+import com.barcodemate.zxing.common.geometry.FinderPatternFinder;
 import com.barcodemate.zxing.common.geometry.PointI;
 import com.barcodemate.zxing.common.geometry.Patterns;
 
@@ -35,6 +37,44 @@ public final class MicroQRDetector {
   private static final int MIN_MODULES = 11;
 
   private MicroQRDetector() {
+  }
+
+  /**
+   * Detects a symbol anywhere in the image, at any rotation.
+   *
+   * <p>Tries the pure path first, which is cheap and handles the common case
+   * of an image that is nothing but the symbol, then falls back to searching
+   * for finder patterns and sampling from each.</p>
+   */
+  public static DetectorResult detect(BitMatrix image) throws NotFoundException {
+    try {
+      return detectPure(image);
+    } catch (NotFoundException notPure) {
+      // Fall through to the general search.
+    }
+    DetectorResult result = search(image);
+    if (result != null) {
+      return result;
+    }
+    // Symbols printed light on dark are legal and do occur. Inverting costs
+    // one pass and is only reached when the normal one found nothing.
+    BitMatrix inverted = image.clone();
+    inverted.flip();
+    result = search(inverted);
+    if (result != null) {
+      return result;
+    }
+    throw NotFoundException.getNotFoundInstance();
+  }
+
+  private static DetectorResult search(BitMatrix image) {
+    for (ConcentricPattern finder : FinderPatternFinder.find(image, true)) {
+      DetectorResult result = MicroQRSampler.sample(image, finder);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
   }
 
   /** Detects a symbol that occupies the whole image, upright. */

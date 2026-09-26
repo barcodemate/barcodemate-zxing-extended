@@ -208,6 +208,38 @@ public final class MicroQRDecoderTestCase {
     assertEquals(BarcodeFormat.MICRO_QR_CODE, result.getBarcodeFormat());
   }
 
+  @Test
+  public void testDetectsRotatedSymbols() throws Exception {
+    // The pure path only handles upright symbols; this is what the finder
+    // pattern search and the geometry layer are for. With a single finder
+    // pattern there is nothing to say which way up a symbol is, so all four
+    // quarter turns are tried and the format information decides.
+    for (int quarterTurns = 0; quarterTurns < 4; quarterTurns++) {
+      BitMatrix image = render(MQRCODEM4, 6, 30);
+      for (int turn = 0; turn < quarterTurns; turn++) {
+        image = rotate90(image);
+      }
+      DetectorResult detected = MicroQRDetector.detect(image);
+      assertEquals("after " + quarterTurns + " quarter turns",
+          "123456abcdefgh", MicroQRDecoder.decode(detected.getBits()).getText());
+    }
+  }
+
+  /** Rotates a quarter turn clockwise. */
+  private static BitMatrix rotate90(BitMatrix source) {
+    int width = source.getWidth();
+    int height = source.getHeight();
+    BitMatrix rotated = new BitMatrix(height, width);
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        if (source.get(x, y)) {
+          rotated.set(height - 1 - y, x);
+        }
+      }
+    }
+    return rotated;
+  }
+
   private static BitMatrix render(String[] rows, int moduleSize, int quietZone) {
     int width = rows[0].length() * moduleSize + 2 * quietZone;
     int height = rows.length * moduleSize + 2 * quietZone;

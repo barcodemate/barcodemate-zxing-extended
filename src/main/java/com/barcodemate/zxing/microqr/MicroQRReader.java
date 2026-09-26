@@ -39,7 +39,7 @@ public final class MicroQRReader implements Reader {
   public Result decode(BinaryBitmap image, Map<DecodeHintType,?> hints)
       throws NotFoundException, ChecksumException, FormatException {
 
-    DetectorResult detected = MicroQRDetector.detectPure(image.getBlackMatrix());
+    DetectorResult detected = MicroQRDetector.detect(image.getBlackMatrix());
     DecoderResult decoded = MicroQRDecoder.decode(detected.getBits());
 
     Result result = new Result(decoded.getText(), decoded.getRawBytes(), detected.getPoints(),

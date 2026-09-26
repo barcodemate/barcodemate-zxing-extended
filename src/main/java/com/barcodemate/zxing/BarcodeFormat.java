@@ -145,7 +145,9 @@ public enum BarcodeFormat {
 
   /**
    * rMQR Code (rectangular micro QR), ISO/IEC 23941.
-   * <p>Not implemented yet.
+   * <p>Implemented, see {@code com.barcodemate.zxing.rmqr.RMQRReader}. The
+   * detector currently handles upright, unrotated images only, so request this
+   * format explicitly; it is not in the default scan set.
    */
   RMQR_CODE,
 

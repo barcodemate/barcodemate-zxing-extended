@@ -81,9 +81,10 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | 2 | DataBar Limited | **已完成** |
 | 3 | DX Film Edge | **已完成** |
 | 4 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | 进行中 |
-| 5 | Micro QR + rMQR（共用检测层）、QR Code Model 1 | |
-| 6 | MicroPDF417 + Compact PDF417 | |
-| 7 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量、Aztec Rune | |
+| 5 | **rMQR** | **已完成**（正置图像；旋转与透视待补） |
+| 6 | Micro QR、QR Code Model 1 | 进行中 |
+| 7 | MicroPDF417 + Compact PDF417 | |
+| 8 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量、Aztec Rune | |
 
 三个一维格式先做，是因为它们都不需要 2D 几何层——ZXing 现成的 `OneDReader`
 行扫描框架直接就能承载。其余二维格式都卡在阶段 4，而那是约 1500 行本身不解码

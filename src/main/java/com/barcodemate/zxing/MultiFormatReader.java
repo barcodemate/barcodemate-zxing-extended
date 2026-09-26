@@ -128,6 +128,12 @@ public final class MultiFormatReader implements Reader {
       if (formats.contains(BarcodeFormat.AZTEC)) {
         readers.add(new AztecReader());
       }
+      // barcodemate-zxing-extended: rMQR is opt-in for now. Its detector
+      // handles upright, unrotated images only, so scanning for it by default
+      // would cost every caller a pass that usually cannot succeed.
+      if (formats.contains(BarcodeFormat.RMQR_CODE)) {
+        readers.add(new com.barcodemate.zxing.rmqr.RMQRReader());
+      }
       if (formats.contains(BarcodeFormat.PDF_417)) {
         readers.add(new PDF417Reader());
       }

@@ -200,6 +200,10 @@ Result result = new MultiFormatReader().decode(bitmap);
 
 这里只 fork 了 ZXing 的 `core` 模块。上游的 `javase`、`android`、`android-core` 辅助模块未纳入；`core` 里的 `RGBLuminanceSource` 与 `PlanarYUVLuminanceSource` 能覆盖大部分接入需求，而且由于包名不冲突，官方辅助模块仍可与本 artifact 一起使用。
 
+## 发布
+
+见 [RELEASING.md](RELEASING.md)。
+
 ## 构建
 
 ```bash

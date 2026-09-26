@@ -218,6 +218,10 @@ Migrating existing ZXing code is a one-time find-and-replace of `com.google.zxin
 
 Only ZXing's `core` module is forked here. The upstream `javase`, `android` and `android-core` helper modules are not included; `RGBLuminanceSource` and `PlanarYUVLuminanceSource` in `core` cover most integration needs, and the official helper modules can still be used alongside this artifact since the package names do not clash.
 
+## Releasing
+
+See [RELEASING.md](RELEASING.md).
+
 ## Building
 
 ```bash

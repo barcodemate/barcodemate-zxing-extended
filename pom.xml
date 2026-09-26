@@ -32,8 +32,27 @@
     <license>
       <name>Apache License, Version 2.0</name>
       <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <developers>
+    <developer>
+      <name>BarcodeMate</name>
+      <url>https://barcodemate.com</url>
+    </developer>
+  </developers>
+
+  <scm>
+    <url>https://github.com/barcodemate/barcodemate-zxing-extended</url>
+    <connection>scm:git:https://github.com/barcodemate/barcodemate-zxing-extended.git</connection>
+    <developerConnection>scm:git:git@github.com:barcodemate/barcodemate-zxing-extended.git</developerConnection>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/barcodemate/barcodemate-zxing-extended/issues</url>
+  </issueManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

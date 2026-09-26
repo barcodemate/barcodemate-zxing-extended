@@ -82,9 +82,10 @@ Ordered by shared foundation, not by perceived value: every 2D format below depe
 | 3 | DX Film Edge | **done** |
 | 4 | Geometry layer ported from zxing-cpp (`Pattern`, `BitMatrixCursor`, `RegressionLine`, `ConcentricFinder`, `GridSampler`, `Quadrilateral`) | next |
 | 5 | **rMQR** | **done** (upright images; rotation and perspective to follow) |
-| 6 | Micro QR, QR Code Model 1 | next |
-| 7 | MicroPDF417 + Compact PDF417 | |
-| 8 | Code 32, PZN, ITF-14, ISBN, Code 39 Extended constant, Aztec Rune | |
+| 6 | **Micro QR** | **done** (upright images) |
+| 7 | QR Code Model 1 | next |
+| 8 | MicroPDF417 + Compact PDF417 | |
+| 9 | Code 32, PZN, ITF-14, ISBN, Code 39 Extended constant, Aztec Rune | |
 
 The three 1D formats came first because none of them needs the 2D geometry
 layer: ZXing's existing `OneDReader` row scanning hosts them directly. Every

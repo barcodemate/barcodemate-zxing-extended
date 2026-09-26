@@ -134,6 +134,9 @@ public final class MultiFormatReader implements Reader {
       if (formats.contains(BarcodeFormat.RMQR_CODE)) {
         readers.add(new com.barcodemate.zxing.rmqr.RMQRReader());
       }
+      if (formats.contains(BarcodeFormat.MICRO_QR_CODE)) {
+        readers.add(new com.barcodemate.zxing.microqr.MicroQRReader());
+      }
       if (formats.contains(BarcodeFormat.PDF_417)) {
         readers.add(new PDF417Reader());
       }

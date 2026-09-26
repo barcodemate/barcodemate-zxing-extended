@@ -35,10 +35,10 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | 码制 | ZXing Java 3.5.4 | ZXing-C++ 3.1.1 | 本项目 |
 |---|:-:|:-:|:-:|
 | PDF417 | 读 + 写 | 读 + 写（原生） | 读 + 写 |
-| Compact PDF417 | — | 读（写：zint） | **计划中** |
+| Compact PDF417 | **可读**（报为 PDF417） | 读（报为 PDF417） | **可读**（报为 PDF417） |
 | **MicroPDF417** | — | 读（写：zint） | **实验性**（仅正置图像） |
 | Aztec | 读 + 写 | 读 + 写（原生） | 读 + 写 |
-| Aztec Rune | — | 读（写：zint） | **计划中** |
+| **Aztec Rune** | — | 读（写：zint） | **已支持解码** |
 | QR Code（Model 2） | 读 + 写 | 读 + 写（原生） | 读 + 写 |
 | QR Code Model 1 | — | 读（无法生成） | **计划中** |
 | **Micro QR Code** | — | 读（写：zint） | **已支持解码**（正置图像） |
@@ -102,6 +102,19 @@ reader。一个符号由**不同行**上的两条轨道组成——确定模块�
 内，调用前后都会清空，不会泄漏到下一张图。
 
 尚未实现格式的 `BarcodeFormat` 常量已经存在，以便下游代码和本项目内部能针对稳定 API 编译。**标注"计划中"的常量不会被任何 Reader 返回**——现在把它放进 `POSSIBLE_FORMATS` 不会有任何效果。每个常量的 Javadoc 都写明了当前状态。
+
+### 一处更正：Compact PDF417 从来不是缺口
+
+上面的格式对比表最初把 Compact PDF417 列为"C++ 能读、Java 不能"，依据是 C++ 侧有
+一个 Java 没有的 `CompactPDF417` 常量。这个判断错了两层。
+
+**zxing-cpp 的 PDF417 reader 从不返回那个常量**——它对 compact 符号一律报 `PDF417`；
+那个常量只用于"请求该 reader"和作为生成目标。**而继承来的 Java reader 本来就能解
+compact 符号**，`CompactPDF417TestCase` 用 `pdf417compact` 生成的符号证明了这一点。
+
+所以这里没有任何东西需要实现。这处更正是明写出来而不是悄悄改掉的，因为
+"**枚举差异看起来像能力差异**"正是本项目一开始就想避开的陷阱——而它也确实把本项目
+坑了一次。
 
 ### MicroPDF417 是实验性的
 

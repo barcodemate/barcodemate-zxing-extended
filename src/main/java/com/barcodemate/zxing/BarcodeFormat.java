@@ -112,7 +112,11 @@ public enum BarcodeFormat {
   /**
    * Compact PDF417, the PDF417 variant whose right row indicators are
    * truncated.
-   * <p>Not implemented yet.
+   * <p>Not a reading gap after all, and kept only so the constant can be
+   * named. The inherited PDF417 reader decodes these symbols, and ZXing-C++
+   * reports {@link #PDF_417} for them as well -- its own reader never returns
+   * its {@code CompactPDF417} constant. Requesting this format is therefore
+   * the same as requesting {@link #PDF_417}.
    */
   COMPACT_PDF_417,
 
@@ -128,8 +132,8 @@ public enum BarcodeFormat {
   MICRO_PDF_417,
 
   /**
-   * Aztec Rune, the fixed 11x11 Aztec variant.
-   * <p>Not implemented yet.
+   * Aztec Rune, the fixed 11x11 Aztec variant carrying a single byte.
+   * <p>Implemented, see {@code com.barcodemate.zxing.aztecrune.AztecRuneReader}.
    */
   AZTEC_RUNE,
 

@@ -140,6 +140,9 @@ public final class MultiFormatReader implements Reader {
       if (formats.contains(BarcodeFormat.MICRO_PDF_417)) {
         readers.add(new com.barcodemate.zxing.micropdf417.MicroPDF417Reader());
       }
+      if (formats.contains(BarcodeFormat.AZTEC_RUNE)) {
+        readers.add(new com.barcodemate.zxing.aztecrune.AztecRuneReader());
+      }
       if (formats.contains(BarcodeFormat.PDF_417)) {
         readers.add(new PDF417Reader());
       }

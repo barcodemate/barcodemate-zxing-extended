@@ -35,10 +35,10 @@ Read = can decode, Write = can generate. The "ZXing-C++" column distinguishes na
 | Symbology | ZXing Java 3.5.4 | ZXing-C++ 3.1.1 | This project |
 |---|:-:|:-:|:-:|
 | PDF417 | read + write | read + write (native) | read + write |
-| Compact PDF417 | — | read (write: zint) | **planned** |
+| Compact PDF417 | **read** *(as PDF417)* | read *(as PDF417)* | **read** *(as PDF417)* |
 | **MicroPDF417** | — | read (write: zint) | **read** *(experimental, upright only)* |
 | Aztec | read + write | read + write (native) | read + write |
-| Aztec Rune | — | read (write: zint) | **planned** |
+| **Aztec Rune** | — | read (write: zint) | **read** |
 | QR Code (Model 2) | read + write | read + write (native) | read + write |
 | QR Code Model 1 | — | read (cannot write) | **planned** |
 | **Micro QR Code** | — | read (write: zint) | **read** *(upright images)* |
@@ -108,6 +108,23 @@ has been seen. That state is scoped to a single `decode()` call and cleared
 before and after it, so nothing leaks into the next image.
 
 The `BarcodeFormat` constants for unimplemented formats already exist so that downstream code and this project's own internals can compile against a stable API. **A constant marked "planned" is never returned by any reader** — putting it in `POSSIBLE_FORMATS` currently has no effect. Each constant's Javadoc states its status.
+
+### A correction: Compact PDF417 was never a gap
+
+The format comparison above originally listed Compact PDF417 as something
+ZXing-C++ reads and ZXing for Java does not, on the strength of the C++ side
+having a `CompactPDF417` constant that Java lacks. That was wrong twice over.
+
+ZXing-C++'s PDF417 reader never returns that constant. It reports `PDF417` for
+compact symbols like any other; the constant exists to request the reader and
+to name a generation target. And the inherited Java reader decodes compact
+symbols perfectly well, which `CompactPDF417TestCase` now demonstrates against
+symbols generated as `pdf417compact`.
+
+So there was nothing to implement. The comparison is corrected rather than
+quietly adjusted, because an enum difference that looks like a capability
+difference is exactly the trap this project set out to avoid, and it caught
+this project too.
 
 ### MicroPDF417 is experimental
 

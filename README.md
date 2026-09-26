@@ -40,7 +40,7 @@ Read = can decode, Write = can generate. The "ZXing-C++" column distinguishes na
 | Aztec | read + write | read + write (native) | read + write |
 | **Aztec Rune** | — | read (write: zint) | **read** |
 | QR Code (Model 2) | read + write | read + write (native) | read + write |
-| QR Code Model 1 | — | read (cannot write) | **planned** |
+| **QR Code Model 1** | — | read (cannot write) | **read** *(one sample verified)* |
 | **Micro QR Code** | — | read (write: zint) | **read** *(upright images)* |
 | **rMQR Code** | — | read (write: zint) | **read** *(upright images)* |
 | Data Matrix (incl. DMRE) | read + write | read + write (native) | read + write |
@@ -83,9 +83,9 @@ Ordered by shared foundation, not by perceived value: every 2D format below depe
 | 4 | Geometry layer ported from zxing-cpp (`Pattern`, `BitMatrixCursor`, `RegressionLine`, `ConcentricFinder`, `GridSampler`, `Quadrilateral`) | next |
 | 5 | **rMQR** | **done** (upright images; rotation and perspective to follow) |
 | 6 | **Micro QR** | **done** (upright images) |
-| 7 | QR Code Model 1 | next |
-| 8 | MicroPDF417 + Compact PDF417 | |
-| 9 | Code 32, PZN, ITF-14, ISBN, Code 39 Extended constant, Aztec Rune | |
+| 7 | **QR Code Model 1**, **Aztec Rune** | **done** |
+| 8 | **MicroPDF417** (experimental); Compact PDF417 needed nothing | **done** |
+| 9 | Code 32, PZN, ITF-14, ISBN, Code 39 Extended constant -- identification layers, not decoders | next |
 
 The three 1D formats came first because none of them needs the 2D geometry
 layer: ZXing's existing `OneDReader` row scanning hosts them directly. Every

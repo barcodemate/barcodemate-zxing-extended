@@ -40,7 +40,7 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | Aztec | 读 + 写 | 读 + 写（原生） | 读 + 写 |
 | **Aztec Rune** | — | 读（写：zint） | **已支持解码** |
 | QR Code（Model 2） | 读 + 写 | 读 + 写（原生） | 读 + 写 |
-| QR Code Model 1 | — | 读（无法生成） | **计划中** |
+| **QR Code Model 1** | — | 读（无法生成） | **已支持解码**（单张样例验证） |
 | **Micro QR Code** | — | 读（写：zint） | **已支持解码**（正置图像） |
 | **rMQR Code** | — | 读（写：zint） | **已支持解码**（正置图像） |
 | Data Matrix（含 DMRE） | 读 + 写 | 读 + 写（原生） | 读 + 写 |
@@ -83,9 +83,9 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | 4 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | 进行中 |
 | 5 | **rMQR** | **已完成**（正置图像；旋转与透视待补） |
 | 6 | **Micro QR** | **已完成**（正置图像） |
-| 7 | QR Code Model 1 | 进行中 |
-| 8 | MicroPDF417 + Compact PDF417 | |
-| 9 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量、Aztec Rune | |
+| 7 | **QR Code Model 1**、**Aztec Rune** | **已完成** |
+| 8 | **MicroPDF417**（实验性）；Compact PDF417 无需实现 | **已完成** |
+| 9 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量 —— 标识层，非解码器 | 进行中 |
 
 三个一维格式先做，是因为它们都不需要 2D 几何层——ZXing 现成的 `OneDReader`
 行扫描框架直接就能承载。其余二维格式都卡在阶段 4，而那是约 1500 行本身不解码

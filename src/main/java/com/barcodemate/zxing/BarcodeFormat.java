@@ -140,8 +140,13 @@ public enum BarcodeFormat {
   /**
    * QR Code Model 1, the original QR Code that predates {@link #QR_CODE}
    * (Model 2).
-   * <p>Not implemented yet. Note that ZXing-C++ cannot generate this format
-   * either, so test symbols have to be sourced elsewhere.
+   * <p>Implemented, see {@code com.barcodemate.zxing.qrmodel1.QRModel1Reader}.
+   * Model 1 and Model 2 share their dimensions and finder patterns, so nothing
+   * about a symbol's outline says which it is; they are told apart by the mask
+   * applied to the format information. Request this format explicitly.
+   * <p>Verification rests on a single sample image, the only one in existence
+   * among either upstream's assets: no encoder available generates Model 1,
+   * ZXing-C++ included.
    */
   QR_CODE_MODEL_1,
 

@@ -42,7 +42,7 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | QR Code（Model 2） | 读 + 写 | 读 + 写（原生） | 读 + 写 |
 | QR Code Model 1 | — | 读（无法生成） | **计划中** |
 | **Micro QR Code** | — | 读（写：zint） | **已支持解码**（正置图像） |
-| rMQR Code | — | 读（写：zint） | **计划中** |
+| **rMQR Code** | — | 读（写：zint） | **已支持解码**（正置图像） |
 | Data Matrix（含 DMRE） | 读 + 写 | 读 + 写（原生） | 读 + 写 |
 | MaxiCode | 读 | 读（写：zint） | 读 |
 

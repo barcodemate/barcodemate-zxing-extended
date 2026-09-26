@@ -179,6 +179,31 @@ public enum BarcodeFormat {
    * symbols.
    * <p>Implemented.
    */
-  TELEPEN_NUMERIC
+  TELEPEN_NUMERIC,
+
+  /**
+   * Code 32, the Italian pharmaceutical code, ISO/IEC 16388 Annex.
+   * <p>Not a symbology of its own: a Code 39 symbol of six characters whose
+   * value, read base 32, is a nine digit pharmacode. Reported in place of
+   * {@link #CODE_39} when the characters and the check digit both agree, which
+   * makes a false positive unlikely but not impossible -- an ordinary six
+   * character Code 39 symbol could in principle read as one.
+   */
+  CODE_32,
+
+  /**
+   * PZN, the German pharmaceutical code.
+   * <p>As with {@link #CODE_32}, a Code 39 symbol rather than a symbology:
+   * a hyphen followed by eight digits, the last a weighted modulo 11 check.
+   */
+  PZN,
+
+  /**
+   * Code 39 Extended, which encodes the full ASCII set using shift characters.
+   * <p>ZXing for Java has always been able to read this -- {@code Code39Reader}
+   * takes an {@code extendedMode} flag -- but had no format constant to report
+   * it with. This is that constant, not a new decoder.
+   */
+  CODE_39_EXTENDED
 
 }

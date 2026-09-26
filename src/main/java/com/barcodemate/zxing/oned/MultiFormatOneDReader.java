@@ -58,6 +58,15 @@ public final class MultiFormatOneDReader extends OneDReader {
       if (possibleFormats.contains(BarcodeFormat.CODE_39)) {
         readers.add(new Code39Reader(useCode39CheckDigit));
       }
+      // Code 32, PZN and Code 39 Extended are interpretations of a Code 39
+      // symbol, not symbologies. This reader reports them; it decodes nothing
+      // the inherited Code 39 reader could not already read.
+      boolean pzn = possibleFormats.contains(BarcodeFormat.PZN);
+      boolean code32 = possibleFormats.contains(BarcodeFormat.CODE_32);
+      boolean code39Extended = possibleFormats.contains(BarcodeFormat.CODE_39_EXTENDED);
+      if (pzn || code32 || code39Extended) {
+        readers.add(new Code39VariantReader(pzn, code32, code39Extended));
+      }
       if (possibleFormats.contains(BarcodeFormat.CODE_93)) {
         readers.add(new Code93Reader());
       }

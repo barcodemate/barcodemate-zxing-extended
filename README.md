@@ -51,13 +51,13 @@ Read = can decode, Write = can generate. The "ZXing-C++" column distinguishes na
 | Symbology | ZXing Java 3.5.4 | ZXing-C++ 3.1.1 | This project |
 |---|:-:|:-:|:-:|
 | Codabar, Code 39, Code 93, Code 128, ITF | read + write | read + write (native) | read + write |
-| Code 39 Extended | read (reader option, no format constant) | read (own constant) | read + own constant *(planned)* |
-| Code 32 (Italian pharmacode) | — | read (write: zint) | **planned** (interpretation layer) |
-| PZN (German pharmacode) | — | read (write: zint) | **planned** (interpretation layer) |
-| ITF-14 | read (as plain ITF) | read (own constant) | read + own constant *(planned)* |
+| **Code 39 Extended** | read (reader option, no format constant) | read (own constant) | **read + own constant** |
+| **Code 32 (Italian pharmacode)** | — | read (write: zint) | **read** |
+| **PZN (German pharmacode)** | — | read (write: zint) | **read** |
+| ITF-14 | read *(as ITF)* | read *(as ITF)* | read *(as ITF)* |
 | EAN-13, EAN-8, UPC-A, UPC-E | read + write | read + write (native) | read + write |
 | EAN-2 / EAN-5 | read (`UPC_EAN_EXTENSION`) | not readable standalone | read |
-| ISBN | read (as EAN-13) | read (own constant) | read + own constant *(planned)* |
+| ISBN | read *(as EAN-13)* | read *(as EAN-13)* | read *(as EAN-13)* |
 | DataBar / Omni (RSS-14) | read | read (write: zint) | read |
 | DataBar Stacked / Stacked Omni | read *(claimed; being verified)* | read (write: zint) | read |
 | DataBar Expanded / Expanded Stacked | read | read (write: zint) | read |
@@ -121,10 +121,15 @@ to name a generation target. And the inherited Java reader decodes compact
 symbols perfectly well, which `CompactPDF417TestCase` now demonstrates against
 symbols generated as `pdf417compact`.
 
-So there was nothing to implement. The comparison is corrected rather than
-quietly adjusted, because an enum difference that looks like a capability
-difference is exactly the trap this project set out to avoid, and it caught
-this project too.
+ITF-14 and ISBN turned out the same way, and were found the same way: both
+appear only in ZXing-C++'s format enum, never in anything a reader returns.
+Its ITF reader reports `ITF` and its EAN/UPC reader reports `EAN13`, exactly as
+the Java ones do.
+
+So three of the nine entries in the original comparison were not gaps at all.
+The tables are corrected rather than quietly adjusted, because an enum
+difference that looks like a capability difference is exactly the trap this
+project set out to avoid, and it caught this project three times.
 
 ### MicroPDF417 is experimental
 

@@ -98,6 +98,18 @@ not in it.
 
    This uploads a *bundle* and stops. Nothing is public yet.
 
+   If the build fails *after* reporting `Uploaded bundle successfully`, the
+   upload still happened; the failure is downstream of it. Check the real state
+   before rebuilding, or you will end up with two deployments of the same
+   version:
+
+   ```bash
+   curl -s -X POST -H "Authorization: Bearer $(printf '%s:%s' USER PASS | base64)" \
+     "https://central.sonatype.com/api/v1/publisher/status?id=DEPLOYMENT_ID"
+   ```
+
+   A `deploymentState` of `VALIDATED` means it is staged and waiting.
+
 5. **Check it in the portal, then publish.** Look at the file list: the jar,
    the sources jar, the javadoc jar, and a `.asc` for each. Confirm the version
    is what you meant. Only then click **Publish**.

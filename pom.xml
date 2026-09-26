@@ -94,4 +94,94 @@
     </plugins>
   </build>
 
+
+  <profiles>
+    <!--
+      Everything Maven Central requires beyond an ordinary build: sources and
+      javadoc jars, and a GPG signature over all of them. Kept in a profile so
+      that an ordinary `mvn test` needs no signing key.
+
+      Activate with -Prelease. See RELEASING.md for the rest.
+    -->
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals><goal>jar-no-fork</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.11.2</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals><goal>jar</goal></goals>
+              </execution>
+            </executions>
+            <configuration>
+              <!-- The imported upstream sources predate several javadoc
+                   strictness rules; failing a release over them would mean
+                   editing upstream code to satisfy a linter. -->
+              <doclint>none</doclint>
+              <quiet>true</quiet>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.7</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals><goal>sign</goal></goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <!-- The Central publishing plugin takes over the deploy step; the
+                 stock deploy plugin would look for a distribution repository
+                 that does not exist. -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>3.1.4</version>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <!--
+              0.7.0 uploads correctly but then fails parsing the server's
+              response, which has since grown a "warnings" field the older
+              client rejects. The upload had already succeeded, so the build
+              failed after the work was done, which is a confusing place to
+              leave a release. This version understands the response.
+            -->
+            <version>0.11.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <!-- Uploaded but not released, so the contents can be checked
+                   before anything becomes permanent. A Central publication
+                   cannot be withdrawn once released. -->
+              <autoPublish>false</autoPublish>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>

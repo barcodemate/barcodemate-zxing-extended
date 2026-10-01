@@ -80,18 +80,32 @@ Ordered by shared foundation, not by perceived value: every 2D format below depe
 | 1 | Telepen, full ASCII and compressed numeric | **done** |
 | 2 | DataBar Limited | **done** |
 | 3 | DX Film Edge | **done** |
-| 4 | Geometry layer ported from zxing-cpp (`Pattern`, `BitMatrixCursor`, `RegressionLine`, `ConcentricFinder`, `GridSampler`, `Quadrilateral`) | next |
-| 5 | **rMQR** | **done** (upright images; rotation and perspective to follow) |
-| 6 | **Micro QR** | **done** (upright images) |
+| 4 | Geometry layer ported from zxing-cpp (`Pattern`, `BitMatrixCursor`, `RegressionLine`, `ConcentricFinder`, `GridSampler`, `Quadrilateral`) | **done** (13 files, ~2,400 lines) |
+| 5 | **rMQR** | **done** (any rotation) |
+| 6 | **Micro QR** | **done** (any rotation) |
 | 7 | **QR Code Model 1**, **Aztec Rune** | **done** |
 | 8 | **MicroPDF417** (experimental); Compact PDF417 needed nothing | **done** |
-| 9 | Code 32, PZN, ITF-14, ISBN, Code 39 Extended constant -- identification layers, not decoders | next |
+| 9 | Code 32, PZN, Code 39 Extended constant -- identification layers, not decoders (ITF-14 and ISBN needed nothing; see the correction below) | **done** |
 
 The three 1D formats came first because none of them needs the 2D geometry
 layer: ZXing's existing `OneDReader` row scanning hosts them directly. Every
-remaining 2D format waits on stage 4, which is ~1500 lines of infrastructure
-that decodes nothing on its own, so shipping working decoders before that
-stretch seemed worth more than strict dependency order.
+2D format waited on stage 4, ~2,400 lines of infrastructure that decodes
+nothing on its own, so shipping working decoders before that stretch seemed
+worth more than strict dependency order.
+
+Stage 4 is what makes stages 5 and 6 work on a photograph rather than a clean
+crop. rMQR and Micro QR differ from QR in kind, not degree: QR's detector
+finds three finder patterns and reads orientation, scale and perspective off
+the triangle they form, while these two have one finder pattern, so each
+candidate stands alone. The orientation comes from the format information
+instead -- all four quarter turns are sampled and the reading with the fewest
+wrong bits wins -- and for rMQR that same reading carries the version, which
+settles the symbol's width and height. Unlike every other member of the
+family, an rMQR symbol's shape cannot be inferred from its outline.
+
+All three of ZXing-C++'s own rMQR sample images decode, the inverted one
+included, with no misreads; upstream's own threshold for that folder is 2 of 3
+in fast mode.
 
 Unlike Telepen, **DataBar Limited is in the default scan set**, alongside the
 DataBar variants upstream already scans for. Its structure is far more
@@ -107,7 +121,7 @@ data track beside it -- so the data cannot be read until the clock next to it
 has been seen. That state is scoped to a single `decode()` call and cleared
 before and after it, so nothing leaks into the next image.
 
-The `BarcodeFormat` constants for unimplemented formats already exist so that downstream code and this project's own internals can compile against a stable API. **A constant marked "planned" is never returned by any reader** — putting it in `POSSIBLE_FORMATS` currently has no effect. Each constant's Javadoc states its status.
+Every `BarcodeFormat` constant added here is now returned by a reader, with one deliberate exception: `COMPACT_PDF_417` never is, because the inherited PDF417 reader reports compact symbols as `PDF_417` and ZXing-C++ does the same. Requesting it is the same as requesting `PDF_417`. Each constant's Javadoc states its status.
 
 ### A correction: Compact PDF417 was never a gap
 

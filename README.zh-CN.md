@@ -80,16 +80,26 @@ ZXing for Java 已经停止扩展新码制。其 README 原文：
 | 1 | Telepen，全 ASCII 与压缩数字两种模式 | **已完成** |
 | 2 | DataBar Limited | **已完成** |
 | 3 | DX Film Edge | **已完成** |
-| 4 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | 进行中 |
-| 5 | **rMQR** | **已完成**（正置图像；旋转与透视待补） |
-| 6 | **Micro QR** | **已完成**（正置图像） |
+| 4 | 从 zxing-cpp 移植几何层（`Pattern`、`BitMatrixCursor`、`RegressionLine`、`ConcentricFinder`、`GridSampler`、`Quadrilateral`） | **已完成**（13 个文件，约 2400 行） |
+| 5 | **rMQR** | **已完成**（任意旋转） |
+| 6 | **Micro QR** | **已完成**（任意旋转） |
 | 7 | **QR Code Model 1**、**Aztec Rune** | **已完成** |
 | 8 | **MicroPDF417**（实验性）；Compact PDF417 无需实现 | **已完成** |
-| 9 | Code 32、PZN、ITF-14、ISBN、Code 39 Extended 独立常量 —— 标识层，非解码器 | 进行中 |
+| 9 | Code 32、PZN、Code 39 Extended 独立常量 —— 标识层，非解码器（ITF-14 与 ISBN 无需实现，见下方更正） | **已完成** |
 
 三个一维格式先做，是因为它们都不需要 2D 几何层——ZXing 现成的 `OneDReader`
-行扫描框架直接就能承载。其余二维格式都卡在阶段 4，而那是约 1500 行本身不解码
+行扫描框架直接就能承载。所有二维格式都要等阶段 4，而那是约 2400 行本身不解码
 任何东西的基础设施；先交付能用的解码器，比严格按依赖顺序推进更有价值。
+
+阶段 4 正是让阶段 5、6 能处理照片而非干净裁图的前提。rMQR 和 Micro QR 与 QR
+的差别是性质上的而非程度上的：QR 的检测器找三个定位图形，从它们构成的三角形
+一次读出方向、尺度与透视；而这两种只有一个定位图形，每个候选都孤立无援。方向
+改由格式信息给出——四个象限转角全部采样，错误位最少的那个读数胜出——对 rMQR
+来说同一个读数还带着版本号，从而确定符号的宽和高。在这个家族里它是唯一无法从
+外轮廓推出形状的成员。
+
+ZXing-C++ 自带的三张 rMQR 样图全部解出，含反色那张，且无误读；上游自己对该目录
+在 fast 档的阈值是三张过两张。
 
 与 Telepen 不同，**DataBar Limited 在默认扫描集里**，和上游已经默认扫描的其他
 DataBar 变体并列。它的结构约束强得多——guard 比例、89 项校验字符表、两个数据
@@ -101,7 +111,7 @@ reader。一个符号由**不同行**上的两条轨道组成——确定模块�
 数据轨——没看到时钟轨就读不了数据轨。这份状态的作用域被限制在一次 `decode()` 调用
 内，调用前后都会清空，不会泄漏到下一张图。
 
-尚未实现格式的 `BarcodeFormat` 常量已经存在，以便下游代码和本项目内部能针对稳定 API 编译。**标注"计划中"的常量不会被任何 Reader 返回**——现在把它放进 `POSSIBLE_FORMATS` 不会有任何效果。每个常量的 Javadoc 都写明了当前状态。
+本项目新增的每个 `BarcodeFormat` 常量现在都会被某个 Reader 返回，只有一个有意的例外：`COMPACT_PDF_417` 不会，因为继承来的 PDF417 reader 对紧凑型符号报告 `PDF_417`，ZXing-C++ 也是如此。请求它等同于请求 `PDF_417`。每个常量的 Javadoc 都写明了当前状态。
 
 ### 一处更正：Compact PDF417 从来不是缺口
 
